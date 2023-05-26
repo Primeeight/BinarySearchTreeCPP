@@ -1,0 +1,30 @@
+#include "gtest/gtest.h"
+#include "../../src/BinarySearchTree/BinarySearchTree.cpp"
+
+/** Test Naming Requirements:
+ *  - Unique Name
+ *  - Name describes what it is testing
+ */
+namespace {
+    TEST(Path, Test1_Int) {
+        auto tree = new BinarySearchTree<int>();
+        int array[8] = {11, 3, 5, 7, 9, 10, 2, 3};
+        for (int & i : array) {
+            tree->insertElement(i);
+        }
+        std::vector<int> expected = {11, 3, 5, 7, 9, 10};
+        int pathSearch = 10;
+        EXPECT_EQ(expected, tree->path(pathSearch));
+    }
+    TEST(Path, Test1_String) {
+        auto tree = new BinarySearchTree<std::string>();
+        std::string array[4] = {"green", "blue", "purple", "red"};
+        for (auto & i : array) {
+            tree->insertElement(i);
+        }
+        std::vector<std::string> expected = {"green", "purple", "red"};
+        std::string pathSearch = "red";
+        EXPECT_EQ(expected, tree->path(pathSearch));
+    }
+
+}
