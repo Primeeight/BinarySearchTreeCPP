@@ -1,6 +1,7 @@
 #ifndef C343_ASSIGNMENT6_BINARYSEARCHTREE_H
 #define C343_ASSIGNMENT6_BINARYSEARCHTREE_H
 
+#include <vector>
 #include "../TreeNode/TreeNode.h"
 
 template<class T>
@@ -140,6 +141,8 @@ public:
 
 
     TreeNode<T> findNode(T &x);
+
+    std::vector<T> getSubTree(TreeNode<T> current);
 };
 
 #endif //C343_ASSIGNMENT6_BINARYSEARCHTREE_H

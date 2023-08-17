@@ -36,25 +36,67 @@ void BinarySearchTree<T>::reclaimAllNodes(TreeNode<T> *&treeNode) { // THIS IS C
 template<class T>
 void BinarySearchTree<T>::insertElement(T &x) {
     // TODO Insert given x element into the tree at proper location, if it isn't already in the tree
-    if (root == NULL)
+    if (root == NULL) {
         root = new TreeNode<T>;
-    else {
+        root->value = x;
+    } else {
         TreeNode<T> current = findNode(x);
-        if (current.value == x){
+        if (current.value == x) {
             return;
         }
         if (current.parent.value < x) {
-            current.parent.left = new TreeNode<x>;
+            current.parent.left = new TreeNode<T>;
+            current.parent.left->value = x;
         } else {
-            current.parent.right = new TreeNode<x>;
+            current.parent.right = new TreeNode<T>;
+            current.parent.right->value = x;
         }
+        size++;
+    }
 
-    }//insert
-}
+}//insert
 
 template<class T>
 bool BinarySearchTree<T>::deleteElement(T &x) {
     // TODO Search tree for element x and delete it if found; return true if deleted, false if not found
+    TreeNode<T> current = findNode(x);
+    //if current is not in the tree.
+    if (current != x)
+        return false;
+    //Case 1: current has no left child.
+    if (current.left == NULL) {
+        if (current.parent == NULL) {
+            root = current.right;
+        } else {
+            if (current.parent->value == x)
+                current.parent->left = current.right;
+            else
+                current.parent->right = current.right;
+        }
+//Case 2: The current node has a left child
+    } else {
+        TreeNode<T> parentOfRightMost = current;
+        TreeNode<T> rightMost = current.left;
+
+        while (rightMost.right != NULL) {
+            parentOfRightMost = rightMost;
+            rightMost = rightMost.right;
+        }
+
+        // Replace the element in current by the element in rightMost
+        current.value = rightMost.value;
+
+        // Eliminate rightmost node
+        if (parentOfRightMost.right == rightMost)
+            parentOfRightMost.right = rightMost.left;
+        else
+            // Special case: parentOfRightMost == current
+            parentOfRightMost.left = rightMost.left;
+    }
+
+    size--; // Reduce the size of the tree
+    return true; // Element deleted successfully
+
 }//delete
 
 template<class T>
@@ -124,8 +166,7 @@ template<class T>
 T &BinarySearchTree<T>::inorderPredecessor(T &x) {
     TreeNode<T> *current = root;
     // TODO locates the inorderPredecessor of element x, if x is in the tree
-    current= findNode(x);
-
+    current = findNode(x);
     return current->parent->value;
 }
 
@@ -181,10 +222,13 @@ int BinarySearchTree<T>::getSize() { // THIS IS COMPLETE
 
 template<class T>
 std::pair<bool, int> BinarySearchTree<T>::contains(T &x) {
-    TreeNode<T> *current = root;
-    int counter = 0;
-
     // TODO Searches through the tree to find element x and returns std::pair<bool, int>(true, counter); if it is found
+    std::vector<T> newPath = path(x);
+    int counter = newPath.size();
+
+    if (newPath.back() == x) {
+        return std::pair(true, counter);
+    }
 
     return std::pair<bool, int>(false, counter);
 }
@@ -208,22 +252,36 @@ std::vector<T> BinarySearchTree<T>::path(T &x) {
             current = current.right;
         } else {
             list->push_back(current.value);
-            return;
+            return *list;
         }
     }
 
     // TODO creates the path to the given element x in the vector object
-    return *list;
+
 }
 
 template<class T>
 std::vector<T> BinarySearchTree<T>::leftSubTree(T &x) {
-    auto list = new std::vector<T>();
-    TreeNode<T> *current = root;
-
+    TreeNode<T> *current = findNode(x);
     // TODO creates a vector containing the items in the left subtree of element x in preorder
 
-    return *list;
+    return getSubTree(current->left);
+}
+
+template<class T>
+std::vector<T> BinarySearchTree<T>::getSubTree(TreeNode<T> current) {
+    auto list = new std::vector<T>();
+    list->push_back(current.value);
+    list->push_back(current.left);
+    list->push_back(current.right);
+
+}
+
+template<class T>
+std::vector<T> BinarySearchTree<T>::rightSubTree(T &x) {
+    TreeNode<T> *current = findNode(x);
+    // TODO creates a vector containing the items in the right subtree of element x in preorder
+    return getSubTree(current->right);
 }
 
 /**
@@ -249,16 +307,6 @@ TreeNode<T> BinarySearchTree<T>::findNode(T &x) {
             return current;
     }
     return current;
-}
-
-template<class T>
-std::vector<T> BinarySearchTree<T>::rightSubTree(T &x) {
-    auto list = new std::vector<T>();
-    TreeNode<T> *current = root;
-
-    // TODO creates a vector containing the items in the right subtree of element x in preorder
-
-    return *list;
 }
 
 template<class T>
