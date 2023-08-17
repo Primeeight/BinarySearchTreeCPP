@@ -41,10 +41,10 @@ private: // Internal Representation
       **/
     int numberOfLeavesHelper(TreeNode<T> *&treeNode);
 
-    /** This method converts a binary search tree into an inorder vector list
+    /** This method converts a binary findNode tree into an inorder vector list
      *  by recursively calling the left and right subtree of each node.
      *  This list will include the root node.
-    * @param current node to search children of (and itself)
+    * @param current node to findNode children of (and itself)
     * @param list vector to hold all values in nodes
     **/
     void insertNodeToList(TreeNode<T> *current, std::vector<T> *list);
@@ -60,7 +60,7 @@ public:
     void clear();
 
     /** Returns true if the element is in the tree
-    * @param x value to search all the nodes of a given tree for
+    * @param x value to findNode all the nodes of a given tree for
     * @return pair containing a boolean and an integer;
      *        boolean will be true if the element is found
      *        (false otherwise); the int represents number
@@ -72,7 +72,7 @@ public:
     /** Insert element o into the binary tree
       * Uses an iterative algorithm
       * Duplicates should not be added to the tree
-      * @param x value to be added to the binary search tree
+      * @param x value to be added to the binary findNode tree
       */
     void insertElement(T &x);
 
@@ -82,7 +82,7 @@ public:
     /** Delete an element from the binary tree.
      * Return true if the element is deleted successfully
      * Return false if the element is not in the tree
-     * @param x value to be removed from the binary search tree
+     * @param x value to be removed from the binary findNode tree
      * @return true if the element was removed; false if the element was not removed
      **/
     bool deleteElement(T &x);
@@ -117,7 +117,7 @@ public:
 
     /** Returns an std::vector<T> containing elements in the path from the root leading
      * to the specified element, returns an empty std::vector<T> if no such element exists.
-     * @param x value to search the tree for and find the path of
+     * @param x value to findNode the tree for and find the path of
      * @return a vector containing the values making up the path to "x"
      **/
     std::vector<T> path(T &x);
@@ -139,7 +139,7 @@ public:
     std::vector<T> rightSubTree(T &x);
 
 
-
+    TreeNode<T> findNode(T &x);
 };
 
 #endif //C343_ASSIGNMENT6_BINARYSEARCHTREE_H

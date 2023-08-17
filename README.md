@@ -15,13 +15,13 @@ To access a child nodes pointers you would use:
 
 1. What happens in the methods if the position is out of bounds?
 
-2. What is the length of an empty binary search tree?
+2. What is the length of an empty binary findNode tree?
 
 3. What is the outcome of contains function if the position is out of bounds?
 
 4. What is the outcome of delete function if the position is out of bounds?
 
-5. What is the outcome of clear function if binary search tree is already empty?
+5. What is the outcome of clear function if binary findNode tree is already empty?
 
 ## Required Tasks
 To complete this assignment you must do the following:
