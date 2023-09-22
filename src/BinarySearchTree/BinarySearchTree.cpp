@@ -35,21 +35,37 @@ void BinarySearchTree<T>::reclaimAllNodes(TreeNode<T> *&treeNode) { // THIS IS C
 
 template<class T>
 void BinarySearchTree<T>::insertElement(T &x) {
-    // TODO Insert given x element into the tree at proper location, if it isn't already in the tree
     if (root == NULL) {
         root = new TreeNode<T>;
         root->value = x;
+        root->right = NULL;
+        root->left = NULL;
+        size++;
     } else {
-        TreeNode<T> current = findNode(x);
-        if (current.value == x) {
-            return;
+
+        TreeNode<T> *current = root;
+        TreeNode<T> *parent = NULL;
+        while (current != NULL) {
+            if (current->value > x) {
+                parent = current;
+                current = current->left;
+            } else if (current->value < x) {
+                parent = current;
+                current = current->right;
+            } else
+                return;
         }
-        if (current.parent.value < x) {
-            current.parent.left = new TreeNode<T>;
-            current.parent.left->value = x;
+
+        if (parent->value > x) {
+            parent->left = new TreeNode<T>;
+            parent->left->value = x;
+            parent->left->left = NULL;
+            parent->left->right = NULL;
         } else {
-            current.parent.right = new TreeNode<T>;
-            current.parent.right->value = x;
+            parent->right = new TreeNode<T>;
+            parent->right->value = x;
+            parent->right->left = NULL;
+            parent->right->right = NULL;
         }
         size++;
     }
@@ -58,40 +74,47 @@ void BinarySearchTree<T>::insertElement(T &x) {
 
 template<class T>
 bool BinarySearchTree<T>::deleteElement(T &x) {
-    // TODO Search tree for element x and delete it if found; return true if deleted, false if not found
-    TreeNode<T> current = findNode(x);
-    //if current is not in the tree.
-    if (current != x)
+    //if current is not in the tree or root is NULL.
+    if (root == NULL)
+        return false;
+    if (contains(x).first == false)
         return false;
     //Case 1: current has no left child.
-    if (current.left == NULL) {
-        if (current.parent == NULL) {
-            root = current.right;
-        } else {
-            if (current.parent->value == x)
-                current.parent->left = current.right;
+    TreeNode<T> *current = findNode(x);
+    if (current->left == NULL) {
+
+
+        if (current->parent == NULL) {
+            root = current->right;
+        }
+
+
+
+        else {
+            if (current->parent->value > x)
+                current->parent->left = current->right;
             else
-                current.parent->right = current.right;
+                current->parent->right = current->right;
         }
 //Case 2: The current node has a left child
     } else {
-        TreeNode<T> parentOfRightMost = current;
-        TreeNode<T> rightMost = current.left;
+        TreeNode<T> *parentOfRightMost = current;
+        TreeNode<T> *rightMost = current->left;
 
-        while (rightMost.right != NULL) {
+        while (rightMost->right != NULL) {
             parentOfRightMost = rightMost;
-            rightMost = rightMost.right;
+            rightMost = rightMost->right;
         }
 
         // Replace the element in current by the element in rightMost
-        current.value = rightMost.value;
+        current->value = rightMost->value;
 
         // Eliminate rightmost node
-        if (parentOfRightMost.right == rightMost)
-            parentOfRightMost.right = rightMost.left;
+        if (parentOfRightMost->right == rightMost)
+            parentOfRightMost->right = rightMost->left;
         else
             // Special case: parentOfRightMost == current
-            parentOfRightMost.left = rightMost.left;
+            parentOfRightMost->left = rightMost->left;
     }
 
     size--; // Reduce the size of the tree
@@ -107,14 +130,24 @@ std::string BinarySearchTree<T>::inorderTraversal() { // THIS IS COMPLETE
 template<class T>
 std::string BinarySearchTree<T>::inorderTraversalHelper(TreeNode<T> *&treeNode) {
     std::stringstream ss;
-    ss << "string";
-    // TODO recursively builds a string inorder (calls left subtree, adds current element, calls rights subtree)
+    std::string result;
+
     //Base case
-    if (treeNode->left == NULL && treeNode->right == NULL)
+    if (treeNode == NULL) {
         return ss.str();
-    else {
+    } else {
         //recursive case
-        return inorderTraversalHelper(treeNode->left) + treeNode->value + inorderTraversalHelper(treeNode->right);
+        ss << inorderTraversalHelper(treeNode->left) << treeNode->value << ", "
+           << inorderTraversalHelper(treeNode->right);
+        //String formatting here.
+        if (treeNode == root) {
+            result = ss.str();
+            result = result.substr(0, result.length() - 2);
+            ss.str("");
+            ss << result;
+
+        }
+        return ss.str();
     }
 }
 
@@ -128,14 +161,25 @@ std::string BinarySearchTree<T>::preorderTraversal() { // THIS IS COMPLETE
 template<class T>
 std::string BinarySearchTree<T>::preorderTraversalHelper(TreeNode<T> *&treeNode) {
     std::stringstream ss;
-    ss << "string";
+    std::string result;
+
+    //ss << "string";
     // TODO recursively builds a string preorder (adds current element, calls left subtree, calls rights subtree)
     //Base case
-    if (treeNode->left == NULL && treeNode->right == NULL)
+    if (treeNode == NULL)
         return ss.str();
     else {
         //recursive case
-        return treeNode->value + inorderTraversalHelper(treeNode->left) + inorderTraversalHelper(treeNode->right);
+        ss << ", " << treeNode->value << preorderTraversalHelper(treeNode->left)
+           << preorderTraversalHelper(treeNode->right);
+        if (treeNode == root) {
+            result = ss.str();
+            result = result.substr(2, result.length() - 2);
+            ss.str("");
+            ss << result;
+
+        }
+        return ss.str();
     }
 }
 
@@ -149,14 +193,24 @@ std::string BinarySearchTree<T>::postorderTraversal() { // THIS IS COMPLETE
 template<class T>
 std::string BinarySearchTree<T>::postorderTraversalHelper(TreeNode<T> *&treeNode) {
     std::stringstream ss;
-    ss << "string";
+    std::string result;
     // TODO recursively builds a string postorder (calls left subtree, calls rights subtree, adds current element)
     //Base case
-    if (treeNode->left == NULL && treeNode->right == NULL)
+    if (treeNode == NULL)
         return ss.str();
     else {
         //recursive case
-        return inorderTraversalHelper(treeNode->left) + inorderTraversalHelper(treeNode->right) + treeNode->value;
+        ss << postorderTraversalHelper(treeNode->left) << postorderTraversalHelper(treeNode->right) << treeNode->value
+           << ", ";
+        //String formatting here.
+        if (treeNode == root) {
+            result = ss.str();
+            result = result.substr(0, result.length() - 2);
+            ss.str("");
+            ss << result;
+
+        }
+        return ss.str();
     }
 }
 
@@ -164,10 +218,27 @@ std::string BinarySearchTree<T>::postorderTraversalHelper(TreeNode<T> *&treeNode
 //private
 template<class T>
 T &BinarySearchTree<T>::inorderPredecessor(T &x) {
-    TreeNode<T> *current = root;
-    // TODO locates the inorderPredecessor of element x, if x is in the tree
+    /**locates the inorderPredecessor of element x, if x is in the tree
+     * If x is not in the tree or the tree is empty, returns NULL.
+     * If x is the only element in the tree, returns x.
+     *
+     */
+
+
+    TreeNode<T> *current = NULL;
+    if (contains(x).first == false || maxTreeHeight() == 0) {
+        return x;
+
+    }
     current = findNode(x);
-    return current->parent->value;
+    if (current->left != NULL) {
+        return current->left->value;
+    } else if (current->parent != NULL) {
+        return current->parent->value;
+    }
+    return current->value;
+
+
 }
 
 //public
@@ -179,15 +250,14 @@ int BinarySearchTree<T>::maxTreeHeight() { // THIS IS COMPLETE
 //private
 template<class T>
 int BinarySearchTree<T>::maxTreeHeightHelper(TreeNode<T> *&treeNode) {
-    // TODO Recursively determines the height of given treeNode
-    if (treeNode->value != NULL) {
-        if (treeNode->left == NULL && treeNode->right == NULL)
-            return 0;
-        else {
-            //recursive case
-            return 1 + max(maxTreeHeightHelper(treeNode->left), maxTreeHeightHelper(treeNode->right));
-        }
+
+    if (treeNode == NULL) {
+        return 0;
+    } else {
+        //recursive case
+        return std::max(1 + maxTreeHeightHelper(treeNode->left), 1 + maxTreeHeightHelper(treeNode->right));
     }
+
 }
 
 
@@ -203,8 +273,7 @@ int BinarySearchTree<T>::numberOfLeaves() { // THIS IS COMPLETE
 //private
 template<class T>
 int BinarySearchTree<T>::numberOfLeavesHelper(TreeNode<T> *&treeNode) {
-    // TODO Recursively determines the number of leaves under given treeNode
-    if (treeNode->value != NULL) {
+    if (treeNode != NULL) {
         if (treeNode->left == NULL && treeNode->right == NULL)
             return 1;
         else {
@@ -222,14 +291,15 @@ int BinarySearchTree<T>::getSize() { // THIS IS COMPLETE
 
 template<class T>
 std::pair<bool, int> BinarySearchTree<T>::contains(T &x) {
-    // TODO Searches through the tree to find element x and returns std::pair<bool, int>(true, counter); if it is found
+
     std::vector<T> newPath = path(x);
     int counter = newPath.size();
+    if (root != NULL) {
+        if (newPath.back() == x) {
+            return std::pair(true, counter);
+        }
 
-    if (newPath.back() == x) {
-        return std::pair(true, counter);
     }
-
     return std::pair<bool, int>(false, counter);
 }
 
@@ -239,49 +309,59 @@ std::vector<T> BinarySearchTree<T>::path(T &x) {
     if (root == NULL) {
         return *list;
     }
-    TreeNode<T> current = root;
-    current.parent = NULL;
-    while (current.value != NULL) {
-        if (current.value < x) {
-            list->push_back(current.value);
-            current.parent = current;
-            current = current.left;
-        } else if (current.value > x) {
-            list->push_back(current.value);
-            current.parent = current;
-            current = current.right;
+    TreeNode<T> *current = root;
+    current->parent = NULL;
+    while (current != NULL) {
+        if (current->value > x) {
+            list->push_back(current->value);
+            current->parent = current;
+            current = current->left;
+        } else if (current->value < x) {
+            list->push_back(current->value);
+            current->parent = current;
+            current = current->right;
         } else {
-            list->push_back(current.value);
+            list->push_back(current->value);
             return *list;
         }
     }
-
-    // TODO creates the path to the given element x in the vector object
-
+    return *list;
 }
 
 template<class T>
 std::vector<T> BinarySearchTree<T>::leftSubTree(T &x) {
-    TreeNode<T> *current = findNode(x);
-    // TODO creates a vector containing the items in the left subtree of element x in preorder
+    auto list = new std::vector<T>();
+    if (contains(x).first) {
+        //use findNode to get to the current element.
+        TreeNode<T> *current = findNode(x);
+        getSubTree(current->left, list);
+    }
 
-    return getSubTree(current->left);
+    return *list;
 }
 
 template<class T>
-std::vector<T> BinarySearchTree<T>::getSubTree(TreeNode<T> current) {
-    auto list = new std::vector<T>();
-    list->push_back(current.value);
-    list->push_back(current.left);
-    list->push_back(current.right);
+void BinarySearchTree<T>::getSubTree(TreeNode<T> *current, std::vector<T> *list) {
 
+    //this is returning a pointer to a vector.
+
+    if (current != NULL) {
+        T value = current->value;
+        (*list).emplace_back(value);
+        getSubTree(current->left, list);
+        getSubTree(current->right, list);
+    }
 }
 
 template<class T>
 std::vector<T> BinarySearchTree<T>::rightSubTree(T &x) {
-    TreeNode<T> *current = findNode(x);
-    // TODO creates a vector containing the items in the right subtree of element x in preorder
-    return getSubTree(current->right);
+
+    auto list = new std::vector<T>();
+    if (contains(x).first) {
+        TreeNode<T> *current = findNode(x);
+        getSubTree(current->right, list);
+    }
+    return *list;
 }
 
 /**
@@ -293,20 +373,23 @@ std::vector<T> BinarySearchTree<T>::rightSubTree(T &x) {
  * @return
  */
 template<class T>
-TreeNode<T> BinarySearchTree<T>::findNode(T &x) {
-    TreeNode<T> current = root;
-    current.parent = NULL;
-    while (current.value != NULL) {
-        if (current.value < x) {
-            current.parent = current;
-            current = current.left;
-        } else if (current.value > x) {
-            current.parent = current;
-            current = current.right;
-        } else
-            return current;
+TreeNode<T> *BinarySearchTree<T>::findNode(T &x) {
+    TreeNode<T> *current = root;
+    current->parent = NULL;
+    if (contains(x).first) {
+        while (current != NULL) {
+            //Seg fault
+            if (current->value > x) {
+                current->left->parent = current;
+                current = current->left;
+            } else if (current->value < x) {
+                current->right->parent = current;
+                current = current->right;
+            } else
+                return current;
+        }
     }
-    return current;
+    return current->parent;
 }
 
 template<class T>

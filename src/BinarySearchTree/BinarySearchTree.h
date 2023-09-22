@@ -140,9 +140,11 @@ public:
     std::vector<T> rightSubTree(T &x);
 
 
-    TreeNode<T> findNode(T &x);
+    TreeNode<T> *findNode(T &x);
 
     std::vector<T> getSubTree(TreeNode<T> current);
+
+    void getSubTree(TreeNode<T> *current, std::vector<T> *list);
 };
 
 #endif //C343_ASSIGNMENT6_BINARYSEARCHTREE_H
